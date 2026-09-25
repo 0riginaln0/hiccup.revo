@@ -24,6 +24,26 @@ Table format rules:
     {:.card "Content"} # Renders: <div class="card">Content</div>
     ```
 
+Usage
+
+  html {
+   :body,
+   {:h1.header, "I <3 BOOKS" |> escape},
+   {:p!main-paragraph, "This boxing enthusiast will go down with a single punch."},
+   {:img, {src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg",
+           alt="Boxing enthusiast meme"}}
+  }
+  |> print
+  
+  #  <body>
+  #     <h1 class="header">I &lt;3 BOOKS</h1>
+  #     <p id="main-paragraph">This boxing enthusiast will go down with a single punch.</p>
+  #     <img src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg"
+  #          alt="Boxing enthusiast meme">
+  #  </body>
+  
+
+
 ##
 
 fn escape(str) do
@@ -95,9 +115,8 @@ fn html_build(sb, doc) do
     classes = temp
   end
 
-  if tag == "" do
+  if tag == ""
     tag = "div"
-  end
   
   sb ~= "<#{tag}"
   if docalen == 1 do # Single tag {:span}
@@ -198,20 +217,3 @@ suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html
   end
 
 end
-
-
-html {
- :body,
- {:h1.header, "I <3 BOOKS" |> escape},
- {:p!main-paragraph, "This boxing enthusiast will go down with a single punch."},
- {:img, {src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg",
-         alt="Boxing enthusiast meme"}}
-}
-|> print
-##
-  <body>
-    <h1 class="header">I <3 BOOKS</h1>
-    <p id="main-paragraph">This boxing enthusiast will go down with a single punch.</p>
-    <img src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg"
-         alt="Boxing enthusiast meme"></img></body>
-##

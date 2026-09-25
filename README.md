@@ -9,13 +9,13 @@ It renders html from a revo table.
 
     `{:span}`
 
-2. Second item is optional and represents tag attributes.
+1. Second item is optional and represents tag attributes.
 
     `{:span, {class="foo"}}`
 
-3.1 Remaining items represent the tag's child content.
+1. Remaining items represent the tag's child content.
 
-3.2 If child content is not a string, it can be another nested element.
+1. If child content is not a string, it can be another nested element.
 
     `{:span, "Hello world", {:span, {class="foo"}, "Foooed"}}`
 

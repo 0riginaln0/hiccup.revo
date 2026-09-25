@@ -34,14 +34,14 @@ Usage
            alt="Boxing enthusiast meme"}}
   }
   |> print
-  
+
   #  <body>
   #     <h1 class="header">I &lt;3 BOOKS</h1>
   #     <p id="main-paragraph">This boxing enthusiast will go down with a single punch.</p>
   #     <img src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg"
   #          alt="Boxing enthusiast meme">
   #  </body>
-  
+
 
 
 ##
@@ -67,7 +67,7 @@ fn void_element?(str) do
   | "input"  => :true
   | "link"   => :true
   | "meta"   => :true
-  | "param"  => :true 
+  | "param"  => :true
   | "source" => :true
   | "track"  => :true
   | "wbr"    => :true
@@ -83,9 +83,8 @@ fn html_build(sb, doc) do
   const docalen = doc:alen()
   let i = 0
 
-  if docalen == 0 do # Empty doc {}
+  if docalen == 0 # Empty doc {}
     return sb
-  end
 
   let rawtag = doc[i] |> string |> string.sub(_, 1, len(_))
   let tag = rawtag
@@ -117,7 +116,7 @@ fn html_build(sb, doc) do
 
   if tag == ""
     tag = "div"
-  
+
   sb ~= "<#{tag}"
   if docalen == 1 do # Single tag {:span}
     sb ~= ">"
@@ -125,9 +124,9 @@ fn html_build(sb, doc) do
       sb ~= "</#{tag}>"
     return sb
   end
-  if has_id do
+
+  if has_id
     sb ~= " id=\"" ~ "#{id}\""
-  end
   if has_classes do
     sb ~= " class=\""
     for v, i in classes do
@@ -147,17 +146,16 @@ fn html_build(sb, doc) do
     i += 1
   end
   sb ~= ">"
-  
-  # append content
-  while i < docalen do
+
+  while i < docalen do # Child content
     if typeof(doc[i]) == :table sb ~= html_build("", doc[i])
     else sb ~= string(doc[i])
     i += 1
   end
-  
+
   unless void_element?(tag)
     sb ~= "</#{tag}>"
-  
+
   sb
 end
 
@@ -191,9 +189,14 @@ suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html
     expect_eq(html {:span!foo, "Hello world"}, "<span id=\"foo\">Hello world</span>")
   end
 
-  test "css selector classes" do
+  test "css selector class" do
     let res = html {:span.foo, "Hello world"}
     expect_eq(res, "<span class=\"foo\">Hello world</span>")
+  end
+
+  test "css selector classes" do
+    let res = html {:span.foo.bar.baz, "Hello world"}
+    expect_eq(res, "<span class=\"foo bar baz\">Hello world</span>")
   end
 
   test "css selectors id and classes" do

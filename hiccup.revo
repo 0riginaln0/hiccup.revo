@@ -1,0 +1,217 @@
+##
+Copyright (c) 2026 Ryzh
+
+hiccup.revo is an HTML builder library. It is a port of the [Hiccup](https://weavejester.github.io/hiccup/)
+
+Renders html from a table.
+
+Table format rules:
+  First item is always the tag name.
+    {:span}
+  Second item is optional and represents tag attributes.
+    {:span, {class="foo"}}
+  Remaining items represent the tag's child content.
+  If child content is not a string, it can be another nested element.
+    {:span, "Hello world", {:span, {class="foo"}, "Foooed"}}
+
+  CSS Shortcuts
+    Attach !id and .class directly to the tag atom
+    Chain multiple classes using dots
+    Defaults to a <div>
+
+    ```revo
+    {:div!hero.bg-blue "Welcome"} # Renders: <div id="hero" class="bg-blue">Welcome</div>
+    {:.card "Content"} # Renders: <div class="card">Content</div>
+    ```
+
+##
+
+fn escape(str) do
+  str |> string
+      |> string.replace(_, "&",  "&amp;")
+      |> string.replace(_, "<",  "&lt;")
+      |> string.replace(_, ">",  "&gt;")
+      |> string.replace(_, "\"", "&quot;")
+      |> string.replace(_, "'",  "&#39;")
+end
+
+fn void_element?(str) do
+  match str
+  | "area"   => :true
+  | "base"   => :true
+  | "br"     => :true
+  | "col"    => :true
+  | "embed"  => :true
+  | "hr"     => :true
+  | "img"    => :true
+  | "input"  => :true
+  | "link"   => :true
+  | "meta"   => :true
+  | "param"  => :true 
+  | "source" => :true
+  | "track"  => :true
+  | "wbr"    => :true
+  | _        => :false
+end
+
+fn html(doc) do
+  let sb = ""
+  html_build(sb, doc)
+end
+
+fn html_build(sb, doc) do
+  const docalen = doc:alen()
+  let i = 0
+
+  if docalen == 0 do # Empty doc {}
+    return sb
+  end
+
+  let rawtag = doc[i] |> string |> string.sub(_, 1, len(_))
+  let tag = rawtag
+  let id = ""
+  let classes = {}
+  const has_id = rawtag:contains?("!")
+  const has_classes = rawtag:contains?(".")
+
+  if has_id and has_classes do
+    let temp = rawtag:split("!")
+    tag = temp[0]
+    let id_and_classes = temp[1]
+    temp = id_and_classes:split(".")
+    id = temp:remove(0)
+    classes = temp
+  end
+  else
+  if has_id and (not has_classes) do
+    let temp = rawtag:split("!")
+    tag = temp[0]
+    id = temp[1]
+  end
+  else
+  if (not has_id) and has_classes do
+    let temp = rawtag:split(".")
+    tag = temp:remove(0)
+    classes = temp
+  end
+
+  if tag == "" do
+    tag = "div"
+  end
+  
+  sb ~= "<#{tag}"
+  if docalen == 1 do # Single tag {:span}
+    sb ~= ">"
+    unless void_element?(tag)
+      sb ~= "</#{tag}>"
+    return sb
+  end
+  if has_id do
+    sb ~= " id=\"" ~ "#{id}\""
+  end
+  if has_classes do
+    sb ~= " class=\""
+    for v, i in classes do
+      if i == 0 sb ~= "#{v}"
+      else sb ~= " #{v}"
+    end
+    sb ~= '"'
+  end
+  i += 1
+
+  if typeof(doc[i]) == :table and doc[i]:klen() != 0 do # Tag attributes {:span, {class = "foo"}}
+    for k in doc[i]:keys() do
+      let v = doc[i][k]
+      let k = k |> string |> string.sub(_, 1, len(_))
+      sb ~= " #{k}=\"" ~ "#{v}\""
+    end
+    i += 1
+  end
+  sb ~= ">"
+  
+  # append content
+  while i < docalen do
+    if typeof(doc[i]) == :table sb ~= html_build("", doc[i])
+    else sb ~= string(doc[i])
+    i += 1
+  end
+  
+  unless void_element?(tag)
+    sb ~= "</#{tag}>"
+  
+  sb
+end
+
+suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html
+
+  test "single tag" do
+    expect_eq(html {:span}, "<span></span>")
+  end
+
+  test "tag attribute" do
+    expect_eq(html {:span, {class = "foo"}}, '<span class="foo"></span>')
+  end
+
+  test "tag attributes" do
+    expect_eq(html {:span, {class = "foo", hero = "storm"}}, '<span class="foo" hero="storm"></span>')
+  end
+
+  test "string content" do
+    expect_eq(html {:span, "Hello world"}, "<span>Hello world</span>")
+  end
+
+  test "adjacent strings content" do
+    expect_eq(html {:span, "foo", "bar"}, "<span>foobar</span>")
+  end
+
+  test "nested elements" do
+    expect_eq(html {:div, {:span}, {:span}}, "<div><span></span><span></span></div>")
+  end
+
+  test "css selector id" do
+    expect_eq(html {:span!foo, "Hello world"}, "<span id=\"foo\">Hello world</span>")
+  end
+
+  test "css selector classes" do
+    let res = html {:span.foo, "Hello world"}
+    expect_eq(res, "<span class=\"foo\">Hello world</span>")
+  end
+
+  test "css selectors id and classes" do
+    let res = html {:span!foo.bar.baz, "Hello world"}
+    expect_eq(res, "<span id=\"foo\" class=\"bar baz\">Hello world</span>")
+  end
+
+  test "div as default tag 1" do
+    let res = html {:.card, "Content"}
+    expect_eq(res, "<div class=\"card\">Content</div>")
+  end
+
+  test "div as default tag 2" do
+    let res = html {:!abo.card, "Content"}
+    expect_eq(res, "<div id=\"abo\" class=\"card\">Content</div>")
+  end
+
+  test "div as default tag 3" do
+    let res = html {:!abo, "Content"}
+    expect_eq(res, "<div id=\"abo\">Content</div>")
+  end
+
+end
+
+
+html {
+ :body,
+ {:h1.header, "I <3 BOOKS" |> escape},
+ {:p!main-paragraph, "This boxing enthusiast will go down with a single punch."},
+ {:img, {src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg",
+         alt="Boxing enthusiast meme"}}
+}
+|> print
+##
+  <body>
+    <h1 class="header">I <3 BOOKS</h1>
+    <p id="main-paragraph">This boxing enthusiast will go down with a single punch.</p>
+    <img src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg"
+         alt="Boxing enthusiast meme"></img></body>
+##

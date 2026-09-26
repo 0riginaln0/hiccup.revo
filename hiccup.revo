@@ -131,8 +131,10 @@ fn html_build(sb, doc) -> string do
   if has_classes do
     sb ~= ' class="'
     for v, i in classes do
-      if i == 0 sb ~= "#{v}"
-      else sb ~= " #{v}"
+      if i == 0
+        sb ~= "#{v}"
+      else
+        sb ~= " #{v}"
     end
     sb ~= '"'
   end
@@ -149,8 +151,10 @@ fn html_build(sb, doc) -> string do
   sb ~= ">"
 
   while i < docalen do # Child content
-    if typeof(doc[i]) == :table sb ~= html_build("", doc[i])
-    else sb ~= string(doc[i])
+    if typeof(doc[i]) == :table
+      sb ~= html_build("", doc[i])
+    else
+      sb ~= string(doc[i])
     i += 1
   end
 

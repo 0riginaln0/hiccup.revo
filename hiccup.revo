@@ -121,7 +121,7 @@ fn html_build(sb, doc) -> string do
   sb ~= "<#{tag}"
   if docalen == 1 do # Single tag {:span}
     sb ~= ">"
-    unless void_element?(tag)
+    unless tag |> void_element?
       sb ~= "</#{tag}>"
     return sb
   end
@@ -158,7 +158,7 @@ fn html_build(sb, doc) -> string do
     i += 1
   end
 
-  unless void_element?(tag)
+  unless tag |> void_element?
     sb ~= "</#{tag}>"
 
   sb

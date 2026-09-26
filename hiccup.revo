@@ -80,7 +80,7 @@ fn name(atom: atom) -> string
   atom |> string |> string.sub(_, 1, len(_))
 
 
-fn html_build(sb, doc) -> string do
+fn html_build(sb: string, doc: table) -> string do
   const docalen = doc:alen()
   let i = 0
 
@@ -165,7 +165,7 @@ fn html_build(sb, doc) -> string do
 end
 
 
-fn html(doc) -> string
+fn html(doc: table) -> string
   html_build("", doc)
 
 

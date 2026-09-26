@@ -95,24 +95,24 @@ fn html_build(sb, doc) -> string do
   const has_classes = rawtag:contains?(".")
 
   if has_id and has_classes do
-    let temp = rawtag:split("!")
-    tag = temp[0]
-    let id_and_classes = temp[1]
-    temp = id_and_classes:split(".")
-    id = temp:remove(0)
-    classes = temp
+    let seq = rawtag:split("!")
+    tag = seq[0]
+    let id_and_classes = seq[1]
+    seq = id_and_classes:split(".")
+    id = seq:remove(0)
+    classes = seq
   end
   else
   if has_id and (not has_classes) do
-    let temp = rawtag:split("!")
-    tag = temp[0]
-    id = temp[1]
+    let seq = rawtag:split("!")
+    tag = seq[0]
+    id = seq[1]
   end
   else
   if (not has_id) and has_classes do
-    let temp = rawtag:split(".")
-    tag = temp:remove(0)
-    classes = temp
+    let seq = rawtag:split(".")
+    tag = seq:remove(0)
+    classes = seq
   end
 
   if tag == ""

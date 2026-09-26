@@ -32,6 +32,35 @@ Defaults to a `<div>`.
 {:.card "Content"} # Renders: <div class="card">Content</div>
 ```
 
+**Additional features**
+
+A tag child can be an iterator:
+```
+let items = {"Apple", "Banana", "Cherry"}
+let res = html {:ul, iter.map(items, fn(item) {:li, item})}
+# '<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>'
+```
+
+A tag child can be added conditionally. When a child is :nil or other falsy value, it's being ignored.
+```
+let logged_in? = :true
+html {
+  :div,
+  if logged_in?
+    {:button, "Go to Dashboard"}
+}
+#'<div><button>Go to Dashboard</button></div>'
+
+logged_in? = :false
+html {
+  :div,
+  if logged_in?
+    {:button, "Go to Dashboard"}
+}
+# '<div></div>'
+```
+
+
 **Usage**
 ```html
 html {

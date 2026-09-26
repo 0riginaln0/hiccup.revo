@@ -134,12 +134,11 @@ fn html_build(sb: table, doc: table) -> table do
     sb:push(" id=\"#{id}\"")
   if has_classes do
     sb:push(' class="')
-    for v, i in classes do
+    for v, i in classes
       if i == 0
         sb:push("#{v}")
       else
         sb:push(" #{v}")
-    end
     sb:push('"')
   end
   i += 1

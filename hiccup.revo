@@ -80,6 +80,10 @@ fn name(atom: atom) -> string
   atom |> string |> string.sub(_, 1, len(_))
 
 
+fn iterator?(t) -> bool
+  t:key?(:kind) and t:key?(:__call)
+
+
 fn html_build(sb: table, doc: table) -> table do
   const docalen = doc:alen()
   let i = 0
@@ -140,7 +144,8 @@ fn html_build(sb: table, doc: table) -> table do
   end
   i += 1
 
-  if typeof(doc[i]) == :table and doc[i]:klen() != 0 do # Tag attributes {:span, {class = "foo"}}
+  # Tag attributes {:span, {class = "foo"}}
+  if typeof(doc[i]) == :table and doc[i]:klen() != 0 and not iterator?(doc[i]) do
     for k in doc[i]:keys() do
       let v = doc[i][k]
       let k = k |> name
@@ -151,10 +156,18 @@ fn html_build(sb: table, doc: table) -> table do
   sb:push(">")
 
   while i < docalen do # Child content
-    if typeof(doc[i]) == :table
-      html_build(sb, doc[i])
-    else if doc[i]
-      sb:push(string(doc[i]))
+    let child = doc[i]
+    if typeof(child) == :table do
+      if iterator?(child) do
+        for v in child
+          html_build(sb, v)
+      end
+      else do
+        html_build(sb, child)
+      end
+    end
+    else if child
+      sb:push(string(child))
     i += 1
   end
 
@@ -240,7 +253,6 @@ suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html
     expect_eq(res, '<div><button>Go to Dashboard</button></div>')
   end
 
-
   test "don't render :nil or other falsy" do
     let logged_in? = :false
     let res = html {
@@ -251,6 +263,10 @@ suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html
     expect_eq(res, '<div></div>')
   end
 
+  test "renders iterators" do
+    let items = {"Apple", "Banana", "Cherry"}
+    let res = html {:ul, iter.map(items, fn(item) {:li, item})}
+    expect_eq(res, '<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>')
+  end
 
 end
-

@@ -157,15 +157,12 @@ fn html_build(sb: table, doc: table) -> table do
 
   while i < docalen do # Child content
     let child = doc[i]
-    if typeof(child) == :table do
-      if iterator?(child) do
+    if typeof(child) == :table
+      if iterator?(child)
         for v in child
           html_build(sb, v)
-      end
-      else do
+      else
         html_build(sb, child)
-      end
-    end
     else if child
       sb:push(string(child))
     i += 1

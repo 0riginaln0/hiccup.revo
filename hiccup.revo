@@ -80,7 +80,7 @@ fn name(atom: atom) -> string
   atom |> string |> string.sub(_, 1, len(_))
 
 
-fn html_build(sb: string, doc: table) -> string do
+fn html_build(sb: table, doc: table) -> table do
   const docalen = doc:alen()
   let i = 0
 
@@ -118,25 +118,25 @@ fn html_build(sb: string, doc: table) -> string do
   if tag == ""
     tag = "div"
 
-  sb ~= "<#{tag}"
+  sb:push("<#{tag}")
   if docalen == 1 do # Single tag {:span}
-    sb ~= ">"
+    sb:push(">")
     unless tag |> void_element?
-      sb ~= "</#{tag}>"
+      sb:push("</#{tag}>")
     return sb
   end
 
   if has_id
-    sb ~= " id=\"#{id}\""
+    sb:push(" id=\"#{id}\"")
   if has_classes do
-    sb ~= ' class="'
+    sb:push(' class="')
     for v, i in classes do
       if i == 0
-        sb ~= "#{v}"
+        sb:push("#{v}")
       else
-        sb ~= " #{v}"
+        sb:push(" #{v}")
     end
-    sb ~= '"'
+    sb:push('"')
   end
   i += 1
 
@@ -144,29 +144,30 @@ fn html_build(sb: string, doc: table) -> string do
     for k in doc[i]:keys() do
       let v = doc[i][k]
       let k = k |> name
-      sb ~= " #{k}=\"#{v}\""
+      sb:push(" #{k}=\"#{v}\"")
     end
     i += 1
   end
-  sb ~= ">"
+  sb:push(">")
 
   while i < docalen do # Child content
     if typeof(doc[i]) == :table
-      sb ~= html_build("", doc[i])
+      html_build(sb, doc[i])
     else
-      sb ~= string(doc[i])
+      sb:push(string(doc[i]))
     i += 1
   end
 
   unless tag |> void_element?
-    sb ~= "</#{tag}>"
+    sb:push("</#{tag}>")
 
   sb
 end
 
 
-fn html(doc: table) -> string
-  html_build("", doc)
+fn html(doc: table) -> string do
+  {} |> html_build(doc) |> string.join('')
+end
 
 
 suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html

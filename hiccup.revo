@@ -153,7 +153,7 @@ fn html_build(sb: table, doc: table) -> table do
   while i < docalen do # Child content
     if typeof(doc[i]) == :table
       html_build(sb, doc[i])
-    else
+    else if doc[i]
       sb:push(string(doc[i]))
     i += 1
   end
@@ -230,4 +230,27 @@ suite "syntax" do # https://weavejester.github.io/hiccup/syntax.html
     expect_eq(res, "<div id=\"abo\">Content</div>")
   end
 
+  test "conditional inclusion" do
+    let logged_in? = :true
+    let res = html {
+      :div,
+      if logged_in?
+        {:button, "Go to Dashboard"}
+    }
+    expect_eq(res, '<div><button>Go to Dashboard</button></div>')
+  end
+
+
+  test "don't render :nil or other falsy" do
+    let logged_in? = :false
+    let res = html {
+      :div,
+      if logged_in?
+        {:button, "Go to Dashboard"}
+    }
+    expect_eq(res, '<div></div>')
+  end
+
+
 end
+

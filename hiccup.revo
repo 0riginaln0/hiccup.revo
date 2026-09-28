@@ -52,7 +52,7 @@ fn raw(str)
 
 fn raw?(t) do
   if typeof(t) != :table
-    return false
+    return :false
   t[0] == :raw
 end
 

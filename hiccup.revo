@@ -50,11 +50,11 @@ Usage
 fn escape(str) -> string
   str
   |> string
-  |> string.replace("&",  "&amp;")
-  |> string.replace("<",  "&lt;")
-  |> string.replace(">",  "&gt;")
-  |> string.replace("\"", "&quot;")
-  |> string.replace("'",  "&#39;")
+  |> string.replace("&", "&amp;")
+  |> string.replace("<", "&lt;")
+  |> string.replace(">", "&gt;")
+  |> string.replace("'", "&#39;")
+  |> string.replace('"', "&quot;")
 
 
 fn void_element?(str: string) -> bool

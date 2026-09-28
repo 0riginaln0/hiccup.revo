@@ -48,10 +48,13 @@ Usage
 
 
 fn raw(str)
-  {raw=:true, str}
+  {:raw, str}
 
-fn raw?(t)
-  t:key?(:raw)
+fn raw?(t) do
+  if typeof(t) != :table
+    return false
+  t[0] == :raw
+end
 
 fn escape(str: string) -> string 
   str
@@ -150,10 +153,13 @@ fn html_build(sb: table, doc: table) -> table do
 
   # Tag attributes {:span, {class = "foo"}} 
   if typeof(doc[i]) == :table and doc[i]:klen() != 0
-     and not iterator?(doc[i])
-     and not raw?(doc[i]) do 
-    for k in doc[i]:keys() do 
-      let v = doc[i][k] 
+     and not iterator?(doc[i]) do
+    for k in doc[i]:keys() do
+      let v = doc[i][k]
+      v = if raw?(v)
+            v[1]
+          else
+            v |> string |> escape
       let k = k |> name 
       sb:push(" #{k}=\"#{v}\"") 
     end 
@@ -169,7 +175,7 @@ fn html_build(sb: table, doc: table) -> table do
           html_build(sb, v)
       else
       if raw?(child)
-        sb:push(string(child[0]))
+        sb:push(string(child[1]))
       else 
         html_build(sb, child) 
     else if child

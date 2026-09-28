@@ -28,20 +28,20 @@ Chain multiple classes using dots.
 Defaults to a `<div>`.
 
 ```revo
-{:div!hero.bg-blue "Welcome"} # Renders: <div id="hero" class="bg-blue">Welcome</div>
-{:.card "Content"} # Renders: <div class="card">Content</div>
+{:div!hero.bg-blue, "Welcome"} # Renders: <div id="hero" class="bg-blue">Welcome</div>
+{:.card, "Content"} # Renders: <div class="card">Content</div>
 ```
 
 **Additional features**
 
-A tag child can be an iterator:
+- A tag child can be an iterator
 ```
 let items = {"Apple", "Banana", "Cherry"}
 let res = html {:ul, iter.map(items, fn(item) {:li, item})}
 # '<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>'
 ```
 
-A tag child can be added conditionally. When a child is :nil or other falsy value, it's being ignored.
+- A tag child can be added conditionally. When a child is :nil or other falsy value, it's being ignored.
 ```
 let logged_in? = :true
 html {
@@ -59,6 +59,8 @@ html {
 }
 # '<div></div>'
 ```
+
+- Custom attributes and child content are automatically escaped. You can ditch it using the `raw` function
 
 
 **Usage**

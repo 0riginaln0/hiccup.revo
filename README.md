@@ -65,7 +65,7 @@ html {
 ```html
 html {
  :body,
- {:h1.header, "I <3 BOOKS" |> escape},
+ {:h1.header, "I <3 BOOKS"},
  {:p!main-paragraph, "This boxing enthusiast will go down with a single punch."},
  {:img, {src="https://cs6.pikabu.ru/post_img/2014/06/04/7/1401873068_417941350.jpg",
          alt="Boxing enthusiast meme"}}

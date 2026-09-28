@@ -20,8 +20,8 @@ Table format rules:
     Defaults to a <div> 
 
     ```revo 
-    {:div!hero.bg-blue "Welcome"} # Renders: <div id="hero" class="bg-blue">Welcome</div> 
-    {:.card "Content"} # Renders: <div class="card">Content</div> 
+    {:div!hero.bg-blue, "Welcome"} # Renders: <div id="hero" class="bg-blue">Welcome</div> 
+    {:.card, "Content"} # Renders: <div class="card">Content</div> 
     ``` 
 
 Usage 
